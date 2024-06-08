@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        #camera-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9999;
+        }
+        #captured-image-container, #captured-video-container {
+            margin-top: 20px; /* Adjust the margin as needed */
+        }
+    </style>
+</head>
+<body>
+    <h1>Take Attendance</h1>
+    <!-- <button id="use-camera-btn">Use Camera</button> -->
+    <button onclick="startClassification( )">Use Camera</button>
+        <script>
+            function startClassification( ) {
+                // Send a request to the server to start face classification
+                fetch('/classify')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response from the server
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            }
+        </script>
+    <button id="use-camera-btn">Capture image</button>
+    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+    <input type="file" id="video-upload" accept="video/*" style="display: none;"> <!-- Video input -->
+    <canvas id="canvas" style="display: none;"></canvas>
+    <button id="capture-btn" style="display: none;">Capture</button>
+    <button id="upload-btn">Select Image</button>
+    <!-- <button id="upload-video-btn">Select Video</button> Button to select video -->
+    <p id="upload-status"></p> <!-- Feedback for successful upload -->
+    <div id="camera-container"></div> <!-- Container for camera -->
+    <div id="captured-image-container"></div> <!-- Container to display captured image -->
+     
+    <script>
+        // Function to start camera
+        async function startCamera() {
+            const video = document.createElement('video');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.play();
+                document.getElementById('camera-container').appendChild(video);
+                video.style.display = 'block';
+                document.getElementById('capture-btn').style.display = 'block';
+                document.getElementById('use-camera-btn').style.display = 'none';
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Error accessing camera. Please try again.');
+            }
+        }
+
+        // Function to capture image from camera
+        function captureImage() {
+            const video = document.querySelector('video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Convert canvas image to data URL
+            const imageDataURL = canvas.toDataURL('image/png');
+            // Create a new Image element with the captured image
+            const capturedImage = new Image();
+            capturedImage.src = imageDataURL;
+            // Append the captured image to the captured image container
+            document.getElementById('captured-image-container').appendChild(capturedImage);
+            // Send the captured image data to the server for processing
+            sendImageData(imageDataURL);
+            console.log('ok')
+            fetch('/image')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response from the server
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+        }
+
+        // Function to handle image upload
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imageDataURL = e.target.result;
+                    // Display the selected image
+                    displaySelectedImage(imageDataURL);
+                    // Send the uploaded image data to the server for processing
+                    sendImageData(imageDataURL);
+                };
+                reader.readAsDataURL(file);
+            }
+            console.log('ok')
+            fetch('/image')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response from the server
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+        }
+
+        // Function to handle video upload
+        function handleVideoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const videoURL = URL.createObjectURL(file);
+                // Create a new video element with the selected video
+                const video = document.createElement('video');
+                video.src = videoURL;
+                video.controls = true; // Show video controls
+                // Remove previously displayed images
+                document.getElementById('captured-image-container').innerHTML = '';
+                // Append the video element to the captured video container
+                document.getElementById('captured-video-container').innerHTML = '';
+                document.getElementById('captured-video-container').appendChild(video);
+                // Send the uploaded video data to the server for processing
+                sendVideoData(file);
+            }
+        }
+
+        // Function to display the selected image
+        function displaySelectedImage(imageDataURL) {
+            // Remove previously displayed images
+            const capturedImageContainer = document.getElementById('captured-image-container');
+            capturedImageContainer.innerHTML = '';
+            // Create and display the new image
+            const image = document.createElement('img');
+            image.src = imageDataURL;
+            capturedImageContainer.appendChild(image);
+            fetch('/image')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response from the server
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+        }
+
+        // Function to send image data to the server for processing
+        function sendImageData(imageDataURL) {
+            fetch('/process_image', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image_data: imageDataURL }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('upload-status').textContent = 'Image uploaded successfully.';
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                // Handle server response
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error sending image data:', error);
+                alert('Error uploading image. Please try again.');
+            });
+        }
+
+        // Function to send video data to the server for processing
+        function sendVideoData(videoFile) {
+            // Implement video data sending logic here
+            console.log('Sending video data to server:', videoFile);
+            // Example: You can use FormData to send the file to the server via fetch
+            /*
+            const formData = new FormData();
+            formData.append('video_file', videoFile);
+            fetch('/process_video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error sending video data:', error));
+            */
+        }
+
+        // Event listener for "Use Camera" button click
+        document.getElementById('use-camera-btn').onclick = startCamera;
+
+        // Event listener for "Capture Image" button click
+        document.getElementById('capture-btn').onclick = captureImage;
+
+        // Event listener for "Select Image" button click
+        document.getElementById('upload-btn').onclick = function () {
+            document.getElementById('image-upload').click();
+            // Turn off the camera when selecting an image
+            const video = document.querySelector('video');
+            if (video) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.remove();
+            }
+        };
+
+        // Event listener for "Select Video" button click
+        document.getElementById('upload-video-btn').onclick = function () {
+            document.getElementById('video-upload').click();
+            // Turn off the camera when selecting a video
+            const video = document.querySelector('video');
+            if (video) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.remove();
+            }
+        };
+
+        // Event listener for file input change (image upload)
+        document.getElementById('image-upload').onchange = handleImageUpload;
+
+        // Event listener for file input change (video upload)
+        document.getElementById('video-upload').onchange = handleVideoUpload;
+    </script>
+</body>
+</html>

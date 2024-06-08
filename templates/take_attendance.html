@@ -1,0 +1,72 @@
+<!-- take_attendance.html -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance</title>
+    <script>
+        function handleFileSelect(event) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+            if (file) {
+                // Perform operations with the selected file
+                console.log('Selected file:', file);
+            }
+        }
+
+        function captureFromCamera() {
+            // Code to capture image from laptop camera
+            console.log('Capturing image from camera...');
+        }
+    </script>
+</head>
+<body>
+    <h1>Take Attendance</h1>
+    <form enctype="multipart/form-data" action="/process_image" method="POST">
+        <input type="file" name="image" accept="image/*" onchange="handleFileSelect(event)">
+        <button type="submit">Upload Image</button>
+    </form>
+    <button onclick="captureFromCamera()">Use Camera</button>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1 class="heading">Take Attendance</h1>
+    <div class="container">
+        <form enctype="multipart/form-data" action="/process_image" method="POST">
+            <input type="file" name="image" accept="image/*" onchange="handleFileSelect(event)">
+            <button type="submit">Upload Image</button>
+        </form>
+        <button onclick="startClassification()">Use Camera</button>
+        <script>
+            function startClassification() {
+                // Send a request to the server to start face classification
+                fetch('/classify')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log(data); // Log the response from the server
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                    });
+            }
+        </script>
+    </div>
+</body>
+</html>

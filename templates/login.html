@@ -1,0 +1,125 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Facial Based Attendance</h1>  
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        {{ form.username.label }} {{ form.username }}
+        {{ form.password.label }} {{ form.password }}
+        {{ form.submit }}
+    </form>
+
+    <a href="{{ url_for('register') }}">Don't have an account? Sign up</a><br>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Facial Based Attendance</h1>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <div class="input-field">
+                    {{ form.username.label }}
+                    {{ form.username }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-field">
+                    {{ form.password.label }}
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.submit }}
+            </div>
+        </form>
+
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
+    </div>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="center">
+        <h1>login</h1>
+
+        <!-- <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="txt_field">
+                {{ form.username.label }}
+                {{ form.username }}
+            </div>
+            <div class="txt_field">
+                {{ form.password.label }}
+                {{ form.password }}
+            </div>
+            <input type="submit" value="Login">
+        </form> -->
+        <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <div class="txt_field">
+        <input type="text" name="username" required>
+        <span></span>
+        <label for="username">Username</label>
+    </div>
+    <div class="txt_field">
+        <input type="password" name="password" required>
+        <span></span>
+        <label for="password">Password</label>
+    </div>
+    <input type="submit" value="Login">
+</form>
+
+        <!-- <p>Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p> -->
+        <p class="signup-text">Not a member? <a href="{{ url_for('register') }}">Signup</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+  <h1>Register Page</h1> 
+
+  
+  <form method="POST" action="">
+    {{form.hidden_tag()}}
+    {{ form.username.label }} {{ form.username }}
+    {{ form.password.label }} {{ form.password }}
+    {{ form.submit }}
+  </form>
+
+  
+  <a href="{{url_for('login')}} ">Already have an account? Log in</a><br> 
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="center">
+        <h1>Register</h1>
+
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="txt_field">
+                <input type="text" name="username" required>
+                <span></span>
+                <label for="username">Username</label>
+            </div>
+            <div class="txt_field">
+                <input type="password" name="password" required>
+                <span></span>
+                <label for="password">Password</label>
+            </div>
+            <input type="submit" value="Register">
+        </form>
+
+        <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+    </div>
+</body>
+</html>
